@@ -22,8 +22,8 @@ env:
 jobs:
   benchmark:
     name: ${{ github.event.inputs.mainref }} vs ${{ github.event.inputs.baseline }}
-    if: ${{ github.repository == 'activeloopai/hub' }}
-    runs-on: [looprunner]
+    if: ${{ github.repository == 'activeloopai/deeplake' }}
+    runs-on: [ubuntu-latest]
     steps:
       - name: Cleans the workspace
         run: rm -rdf baseline-source comparison-source benchmark-source
@@ -39,13 +39,13 @@ jobs:
       - name: Checkout the Hub source code to compare
         uses: actions/checkout@v2
         with:
-          repository: activeloopai/hub
+          repository: activeloopai/deeplake
           ref: ${{ github.event.inputs.mainref }}
           path: comparison-source
       - name: Checkout the Hub baseline source code
         uses: actions/checkout@v2
         with:
-          repository: activeloopai/hub
+          repository: activeloopai/deeplake
           ref: ${{ github.event.inputs.baseline }}
           path: baseline-source
       - name: Set up Python 3.8
@@ -65,12 +65,12 @@ jobs:
         run: |
           git config --global user.name activeloop-bot
           git config --global user.email bot@activeloop.ai
-      - name: Install Baseline Hub
+      - name: Install Baseline Deeplake
         run: |
           python -m pip install --upgrade pip
           cd baseline-source
-          pip install -r hub/requirements/common.txt
           pip install -r hub/requirements/plugins.txt
+          pip install -r hub/requirements/common.txt
           pip install -r hub/requirements/tests.txt
           python setup.py install
       - name: Doing the benchmark and publishing results -> Hub baseline version
@@ -82,8 +82,8 @@ jobs:
       - name: Install Hub to compare
         run: |
           cd comparison-source
-          pip install -r hub/requirements/common.txt
           pip install -r hub/requirements/plugins.txt
+          pip install -r hub/requirements/common.txt
           pip install -r hub/requirements/tests.txt
           python setup.py install
       - name: Doing the benchmark and comparing with baseline -> Hub from input ref
