@@ -23,7 +23,7 @@ jobs:
   benchmark:
     name: ${{ github.event.inputs.mainref }} vs ${{ github.event.inputs.baseline }}
     if: ${{ github.repository == 'activeloopai/deeplake' }}
-    runs-on: [self-hosted]
+    runs-on: [ubuntu-latest]
     steps:
       - name: Cleans the workspace
         run: rm -rdf baseline-source comparison-source benchmark-source
