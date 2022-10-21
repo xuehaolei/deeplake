@@ -70,11 +70,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           cd baseline-source
-          pip install -r hub/requirements/plugins.txt
-          pip install -r hub/requirements/common.txt
-          pip install -r hub/requirements/tests.txt
+          pip install -r deeplake/requirements/plugins.txt
+          pip install -r deeplake/requirements/common.txt
+          pip install -r deeplake/requirements/tests.txt
           python setup.py install
-      - name: Doing the benchmark and publishing results -> Hub baseline version
+      - name: Doing the benchmark and publishing results -> Deeplake baseline version
         run: |
           cd benchmark-source
           pip install -r requirements.ci.txt
@@ -83,11 +83,11 @@ jobs:
       - name: Install Hub to compare
         run: |
           cd comparison-source
-          pip install -r hub/requirements/plugins.txt
-          pip install -r hub/requirements/common.txt
-          pip install -r hub/requirements/tests.txt
+          pip install -r deeplake/requirements/plugins.txt
+          pip install -r deeplake/requirements/common.txt
+          pip install -r deeplake/requirements/tests.txt
           python setup.py install
-      - name: Doing the benchmark and comparing with baseline -> Hub from input ref
+      - name: Doing the benchmark and comparing with baseline -> Deeplake from input ref
         run: |
           cd benchmark-source
           python3 run.py --all --baseline=${BASELINE_REF} --github
