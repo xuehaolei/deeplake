@@ -16,7 +16,7 @@ env:
 jobs:
   benchmark-pr:
     # if: ${{ (github.event_name == 'pull_request_target' || github.event_name == 'pull_request') && contains(github.event.pull_request.labels.*.name, 'trigger-benchmark') }}
-    runs-on: [ubuntu-latest]
+    runs-on: [self-hosted]
     steps:
       - name: Cancel previous runs if available
         uses: styfle/cancel-workflow-action@0.9.1
