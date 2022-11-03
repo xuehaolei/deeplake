@@ -15,6 +15,7 @@ on:
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ACTIVELOOP_HUB_USERNAME: ${{ secrets.ACTIVELOOP_HUB_USERNAME }}
   ACTIVELOOP_HUB_PASSWORD: ${{ secrets.ACTIVELOOP_HUB_PASSWORD }}
   REPOSITORY_PAT: ${{ secrets.ACTIVELOOP_BOT_PAT }}
   BASELINE_REF: manual-compare-${{ github.event.inputs.baseline }}
@@ -22,14 +23,14 @@ env:
 jobs:
   benchmark:
     name: ${{ github.event.inputs.mainref }} vs ${{ github.event.inputs.baseline }}
-    if: ${{ github.repository == 'activeloopai/hub' }}
-    runs-on: [looprunner]
+    if: ${{ github.repository == 'activeloopai/deeplake' }}
+    runs-on: [self-hosted]
     steps:
       - name: Cleans the workspace
         run: rm -rdf baseline-source comparison-source benchmark-source
       - name: Installs FFMPEG
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - name: Checkout the Hub Benchmark source code
+      - name: Checkout the Deep Lake Benchmark source code
         uses: actions/checkout@v2
         with:
           repository: activeloopai/hub-benchmark
@@ -39,13 +40,13 @@ jobs:
       - name: Checkout the Hub source code to compare
         uses: actions/checkout@v2
         with:
-          repository: activeloopai/hub
+          repository: activeloopai/deeplake
           ref: ${{ github.event.inputs.mainref }}
           path: comparison-source
       - name: Checkout the Hub baseline source code
         uses: actions/checkout@v2
         with:
-          repository: activeloopai/hub
+          repository: activeloopai/deeplake
           ref: ${{ github.event.inputs.baseline }}
           path: baseline-source
       - name: Set up Python 3.8
@@ -65,15 +66,15 @@ jobs:
         run: |
           git config --global user.name activeloop-bot
           git config --global user.email bot@activeloop.ai
-      - name: Install Baseline Hub
+      - name: Install Baseline Deeplake
         run: |
           python3 -m pip install --upgrade pip
           cd baseline-source
-          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/plugins.txt
+          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/tests.txt
           python setup.py install
-      - name: Doing the benchmark and publishing results -> Deep Lake baseline version
+      - name: Doing the benchmark and publishing results -> Deeplake baseline version
         run: |
           cd benchmark-source
           pip install -r requirements.ci.txt
@@ -82,11 +83,11 @@ jobs:
       - name: Install Deep Lake to compare
         run: |
           cd comparison-source
-          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/plugins.txt
+          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/tests.txt
           python setup.py install
-      - name: Doing the benchmark and comparing with baseline -> Deep Lake from input ref
+      - name: Doing the benchmark and comparing with baseline -> Deeplake from input ref
         run: |
           cd benchmark-source
           python3 run.py --all --baseline=${BASELINE_REF} --github

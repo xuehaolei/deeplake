@@ -1,12 +1,13 @@
-name: Benchmark Hub
+name: Benchmark Deep Lake
 on:
   workflow_dispatch:
-  # pull_request_target:
-  #   types: [labeled]
+  pull_request_target:
+    types: [labeled]
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ACTIVELOOP_HUB_USERNAME: ${{ secrets.ACTIVELOOP_HUB_USERNAME }}
   ACTIVELOOP_HUB_PASSWORD: ${{ secrets.ACTIVELOOP_HUB_PASSWORD }}
   REPOSITORY_PAT: ${{ secrets.ACTIVELOOP_BOT_PAT }}
   BASELINE_REF: pr-${{ github.event.number }}-baseline-${{ github.event.pull_request.base.ref }}
@@ -15,7 +16,7 @@ env:
 jobs:
   benchmark-pr:
     if: ${{ (github.event_name == 'pull_request_target' || github.event_name == 'pull_request') && contains(github.event.pull_request.labels.*.name, 'trigger-benchmark') }}
-    runs-on: [looprunner]
+    runs-on: [self-hosted]
     steps:
       - name: Cancel previous runs if available
         uses: styfle/cancel-workflow-action@0.9.1
@@ -84,16 +85,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: pr-source
-      - name: Checkout the Hub baseline source code
+      - name: Checkout the Deep Lake baseline source code
         uses: actions/checkout@v2
         with:
           path: baseline-source
           repository: ${{ github.event.pull_request.base.repo.full_name }}
           ref: ${{ github.event.pull_request.base.ref }}
-      - name: Checkout the Hub Benchmark source code
+      - name: Checkout the Deep Lake Benchmark source code
         uses: actions/checkout@v2
         with:
           repository: activeloopai/hub-benchmark
+          ref: units
           token: ${{ secrets.ACTIVELOOP_BOT_PAT }}
           path: benchmark-source
       - name: Set up Python 3.8
@@ -118,8 +120,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install csv2md # Installs csv2md for the last step
           cd baseline-source
-          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/plugins.txt
+          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/tests.txt
           python setup.py install
       - name: Doing the benchmark and publishing results -> Deep Lake baseline version
@@ -131,8 +133,8 @@ jobs:
       - name: Install Deep Lake from PR
         run: |
           cd pr-source
-          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/plugins.txt
+          pip install -r deeplake/requirements/common.txt
           pip install -r deeplake/requirements/tests.txt
           python setup.py install
       - name: Doing the benchmark, publishing and comparing with baseline -> Deep Lake from PR
@@ -145,7 +147,7 @@ jobs:
           mkdir comment-temp
           csv2md benchmark-source/results/improvements.csv > comment-temp/improvements.md
           csv2md benchmark-source/results/regressions.csv > comment-temp/regressions.md
-      - name: Update benchmark results from file as a comment on pulll requests
+      - name: Update benchmark results from file as a comment on pull requests
         uses: actions/github-script@v3
         if: success()
         with:
