@@ -13,7 +13,6 @@ from typing import Optional
 from deeplake.integrations.pytorch.dataset import TorchDataset
 from deeplake.client.client import DeepLakeBackendClient
 from mmdet.core import BitmapMasks
-import albumentations as A
 import deeplake as dp
 from deeplake.util.warnings import always_warn
 from click.testing import CliRunner
@@ -96,7 +95,8 @@ class MMDetDataset(TorchDataset):
         if self.bbox_format == "PascalVOC":
             bboxes = self.bboxes[idx]
         elif self.bbox_format == "COCO":
-            bboxes = coco_2_pascal(self.bboxes[idx], self.images[idx].shape)
+            bboxes = self.bboxes[idx]
+            # bboxes = coco_2_pascal(self.bboxes[idx], self.images[idx].shape)
         else:
             raise ValueError(f"Bounding boxes in {self.bbox_format} are not supported")
         return {
@@ -496,19 +496,6 @@ class HubDatasetCLass:
         # self.pipeline = cfg.pipeline
 
 
-rand_crop = A.Compose(
-    [
-        A.RandomSizedBBoxSafeCrop(width=128, height=128, erosion_rate=0.2),
-    ],
-    bbox_params=A.BboxParams(
-        format="pascal_voc",
-        label_fields=["labels", "bbox_ids"],
-        min_area=25,
-        min_visibility=0.6,
-    ),
-)
-
-
 def _find_tensor_with_htype(ds: dp.Dataset, htype: str):
     tensors = [k for k, v in ds.tensors.items() if v.meta.htype == htype]
     if not tensors:
@@ -539,8 +526,8 @@ def transform(
     else:
         masks = None
     bboxes = sample_in[boxes_tensor]
-    if bbox_format == "COCO":
-        bboxes = coco_2_pascal(bboxes, img.shape)
+    # if bbox_format == "COCO":
+    #     bboxes = coco_2_pascal(bboxes, img.shape)
     labels = sample_in[labels_tensor]
 
     img = img[..., ::-1]  # rgb_to_bgr should be optional
@@ -731,6 +718,7 @@ def train_detector(
     train_dataloader_default_args = dict(
         samples_per_gpu=cfg.data.get("samples_per_gpu", 256),
         workers_per_gpu=cfg.data.get("workers_per_gpu", 8),
+        shuffle=cfg.data.get("shuffle", True),
         # `num_gpus` will be ignored if distributed
         num_gpus=len(cfg.gpu_ids),
         dist=distributed,
