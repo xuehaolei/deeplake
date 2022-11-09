@@ -66,7 +66,7 @@ def sample_by(
         Sample the dataset with ``labels == 5`` twice more than ``labels == 6``
 
         >>> import deeplake
-        >>> from deeplake.experimental import query
+        >>> from deeplake.experimental import sample_by
         >>> ds = deeplake.load('hub://activeloop/fashion-mnist-train')
         >>> sampled_ds = sample_by(ds_train, "max_weight(labels == 5: 10, labels == 6: 5)")
 
