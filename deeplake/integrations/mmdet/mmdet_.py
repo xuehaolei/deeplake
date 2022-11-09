@@ -41,6 +41,7 @@ import tempfile
 from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from deeplake.integrations.mmdet import mmdet_utils
 
+
 class MMDetDataset(TorchDataset):
     def __init__(
         self,
@@ -57,7 +58,13 @@ class MMDetDataset(TorchDataset):
         self.bbox_format = bbox_format
         self.bboxes = self._get_bboxes(tensors_dict["boxes_tensor"])
         self.labels = self._get_labels(tensors_dict["labels_tensor"])
-        self.evaluator = mmdet_utils.COCODatasetEvaluater(pipeline, classes=self.CLASSES, hub_dataset=self.dataset) if bbox_format == "COCO" else None # TO DO: read from htype info
+        self.evaluator = mmdet_utils.COCODatasetEvaluater(
+            pipeline, classes=self.CLASSES, 
+            hub_dataset=self.dataset,
+            masks=self.masks,
+            bboxes=self.bboxes,
+            labels=self.labels,
+        ) if bbox_format == "COCO" else None # TO DO: read from htype info
 
     def _get_images(self, images_tensor):
         images_tensor = images_tensor or _find_tensor_with_htype(self.dataset, "image")
@@ -98,6 +105,7 @@ class MMDetDataset(TorchDataset):
             bboxes = self.bboxes[idx]
         elif self.bbox_format == "COCO":
             bboxes = self._coco_2_pascal(self.bboxes[idx])
+            bboxes = self.bboxes[idx]
         else:
             raise ValueError(f"Bounding boxes in {self.bbox_format} are not supported")
         return {
@@ -274,7 +282,6 @@ class MMDetDataset(TorchDataset):
                         eval_results[f"AR@{num}"] = ar[i]
             return eval_results
 
-        self.evaluator.createHubIndex()
         return self.evaluator.evaluate(
                     results,
                     metric=metric,
@@ -583,7 +590,7 @@ def build_dataloader(
         images_tensor = images_tensor or _find_tensor_with_htype(dataset.ds, "image")
         masks_tensor = masks_tensor or _find_tensor_with_htype(
             dataset.ds, "binary_mask"
-        )
+        ) or _find_tensor_with_htype(dataset.ds, "binary_mask")
         boxes_tensor = boxes_tensor or _find_tensor_with_htype(dataset.ds, "bbox")
         labels_tensor = labels_tensor or _find_tensor_with_htype(
             dataset.ds, "class_label"

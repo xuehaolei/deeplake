@@ -26,13 +26,16 @@ def _isArrayLike(obj):
 
 
 class _COCO(pycocotools_coco.COCO):
-    def __init__(self, hub_dataset=None):
+    def __init__(self, hub_dataset=None, masks=None, bboxes=None, labels=None):
         """
         Constructor of Microsoft COCO helper class for reading and visualizing annotations.
         :param annotation_file (str): location of annotation file
         :param image_folder (str): location to the folder that hosts images.
         :return:
         """
+        self.masks = masks
+        self.bboxes = bboxes
+        self.labels = labels
         # load dataset
         self.anns,self.cats,self.imgs = dict(),dict(),dict()
         self.imgToAnns, self.catToImgs = defaultdict(list), defaultdict(list)
@@ -47,29 +50,33 @@ class _COCO(pycocotools_coco.COCO):
         anns, cats, imgs = {}, {}, {}
         imgToAnns, catToImgs = defaultdict(list),defaultdict(list)
         absolute_id = 0
-        all_categories = self.dataset["categories"].numpy(aslist=True)
+        all_categories = self.labels
         # print("categories created")
-        all_bboxes = self.dataset["boxes"].numpy(aslist=True)
+        all_bboxes = self.bboxes
         # print("boxes created")
-        all_masks = self.dataset["masks"].numpy(aslist=True)
+        all_masks = self.masks
         # print("masks created")
-        all_iscrowds = self.dataset["iscrowds"].numpy(aslist=True)
+        if "iscrowds" in self.dataset.tensors:
+            all_iscrowds = self.dataset["iscrowds"].numpy(aslist=True)
+        else:
+            all_iscrowds = None
         # print("iscrowds created")
 
         for row_index, row in enumerate(self.dataset):
             categories = all_categories[row_index] # make referencig custom
             bboxes = all_bboxes[row_index]
             masks = all_masks[row_index]
-            is_crowds = all_iscrowds[row_index]
-
+            if all_iscrowds is not None:
+                is_crowds = all_iscrowds[row_index]
+            else:
+                is_crowds = np.zeros_like(categories)
             img = {
                 "id": row_index,
                 "height": masks.shape[0],
                 "width": masks.shape[1],
             }
             imgs[row_index] = img
-            print("stared converting masks")
-            for bbox_index, bbox in tqdm.tqdm(enumerate(bboxes)):
+            for bbox_index, bbox in enumerate(bboxes):
                 ann = {
                     "image_id": row_index,
                     "id": absolute_id,
@@ -83,7 +90,6 @@ class _COCO(pycocotools_coco.COCO):
                 imgToAnns[row_index].append(ann)
                 anns[absolute_id] = ann
                 absolute_id += 1
-            print("ended converting masks")
         category_names = self.dataset["categories"].info.class_names # TO DO: add super category names
         category_names = [{"id": cat_id, "name": name} for cat_id, name in enumerate(category_names)]
 
@@ -225,12 +231,18 @@ class HubCOCO(_COCO):
     the same interface as LVIS class.
     """
 
-    def __init__(self, hub_dataset=None):
+    def __init__(
+        self,
+        hub_dataset=None,
+        masks=None,
+        bboxes=None,
+        labels=None,
+    ):
         if getattr(pycocotools, '__version__', '0') >= '12.0.2':
             warnings.warn(
                 'mmpycocotools is deprecated. Please install official pycocotools by "pip install pycocotools"',  # noqa: E501
                 UserWarning)
-        super().__init__(hub_dataset=hub_dataset)
+        super().__init__(hub_dataset=hub_dataset, masks=masks, labels=labels, bboxes=bboxes)
         self.img_ann_map = self.imgToAnns
         self.cat_img_map = self.catToImgs
 
@@ -263,9 +275,12 @@ class COCODatasetEvaluater(mmdet_coco.CocoDataset):
         seg_prefix=None,
         seg_suffix='.png',
         proposal_file=None,
-        test_mode=False,
+        test_mode=True,
         filter_empty_gt=True,
-        file_client_args=dict(backend='disk')
+        file_client_args=dict(backend='disk'),
+        masks=None,
+        bboxes=None,
+        labels=None,
     ):
         self.img_prefix = img_prefix
         self.seg_prefix = seg_prefix
@@ -276,7 +291,12 @@ class COCODatasetEvaluater(mmdet_coco.CocoDataset):
         self.file_client = mmcv.FileClient(**file_client_args)
         self.CLASSES = classes
 
-        self.data_infos = self.load_annotations(hub_dataset)
+        self.data_infos = self.load_annotations(
+            hub_dataset,
+            labels=labels,
+            masks=masks,
+            bboxes=bboxes,
+        )
         self.proposals = None
 
         # filter images too small and containing no annotations
@@ -293,7 +313,13 @@ class COCODatasetEvaluater(mmdet_coco.CocoDataset):
     def pipeline(self, x):
         return x
 
-    def load_annotations(self, hub_dataset):
+    def load_annotations(
+        self, 
+        hub_dataset,
+        labels=None,
+        masks=None,
+        bboxes=None,
+    ):
         """Load annotation from COCO style annotation file.
 
         Args:
@@ -303,7 +329,7 @@ class COCODatasetEvaluater(mmdet_coco.CocoDataset):
             list[dict]: Annotation info from COCO api.
         """
 
-        self.coco = HubCOCO(hub_dataset)
+        self.coco = HubCOCO(hub_dataset, labels=labels, bboxes=bboxes, masks=masks)
         # The order of returned `cat_ids` will not
         # change with the order of the CLASSES
         self.cat_ids = self.coco.get_cat_ids(cat_names=self.CLASSES)
