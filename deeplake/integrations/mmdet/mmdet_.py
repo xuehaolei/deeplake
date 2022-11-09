@@ -639,7 +639,7 @@ def build_dataloader(
                 transform=transform_fn,
                 tensors=tensors,
                 collate_fn=collate_fn,
-                torch_dataset=MMDetDataset,
+                torch_dataset=TorchDataset,
                 bbox_format=bbox_format,
                 pipeline=pipeline,
                 batch_size=batch_size,
@@ -659,14 +659,14 @@ def build_dataloader(
                     num_workers=num_workers, collate_fn=collate_fn, tensors=tensors
                 )
             )
-            mmdet_ds = MMDetDataset(
-                dataset=dataset.ds,
-                bbox_format=bbox_format,
-                pipeline=pipeline,
-                tensors_dict=tensors_dict,
-                tensors=tensors,
-            )
-            loader.dataset = mmdet_ds
+            # mmdet_ds = MMDetDataset(
+            #     dataset=dataset.ds,
+            #     bbox_format=bbox_format,
+            #     pipeline=pipeline,
+            #     tensors_dict=tensors_dict,
+            #     tensors=tensors,
+            # )
+            # loader.dataset = mmdet_ds
         loader.dataset.CLASSES = classes
         return loader
 
