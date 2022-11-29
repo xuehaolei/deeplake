@@ -612,15 +612,15 @@ def transform(
     bbox_info: str,
     poly2mask: bool,
 ):
-    # img = sample_in[images_tensor]
-    # if not isinstance(img, np.ndarray):
-    #     img = np.array(img)
+    img = sample_in[images_tensor]
+    if not isinstance(img, np.ndarray):
+        img = np.array(img)
 
-    # bboxes = sample_in[boxes_tensor]
-    # # TODO bbox format should be recognized outside the transform, not per sample basis.
-    # bboxes = convert_to_pascal_format(bboxes, bbox_info, img.shape)
-    # if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
-    #     bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
+    bboxes = sample_in[boxes_tensor]
+    # TODO bbox format should be recognized outside the transform, not per sample basis.
+    bboxes = convert_to_pascal_format(bboxes, bbox_info, img.shape)
+    if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
+        bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
 
     # labels = sample_in[labels_tensor]
 
