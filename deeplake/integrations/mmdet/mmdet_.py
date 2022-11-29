@@ -764,6 +764,7 @@ def build_dataloader(
         )
 
     else:
+        print(f"====Batch size = {batch_size}====")
         loader = (
             dataloader(dataset)
             .transform(transform_fn)
