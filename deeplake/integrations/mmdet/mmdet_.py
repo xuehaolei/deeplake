@@ -622,15 +622,15 @@ def transform(
     if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
         bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
 
-    # labels = sample_in[labels_tensor]
+    labels = sample_in[labels_tensor]
 
-    # if img.ndim == 2:
-    #     img = np.expand_dims(img, -1)
+    if img.ndim == 2:
+        img = np.expand_dims(img, -1)
 
-    # img = img[..., ::-1]  # rgb_to_bgr should be optional
-    # if img.shape[2] == 1:
-    #     img = np.repeat(img, 3, axis=2)
-    # shape = img.shape
+    img = img[..., ::-1]  # rgb_to_bgr should be optional
+    if img.shape[2] == 1:
+        img = np.repeat(img, 3, axis=2)
+    shape = img.shape
 
     # if masks_tensor:
     #     masks = sample_in[masks_tensor]
