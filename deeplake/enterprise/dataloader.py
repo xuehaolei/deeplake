@@ -94,6 +94,7 @@ class DeepLakeDataLoader(DataLoader):
         self._primary_tensor_name = _primary_tensor_name or find_primary_tensor(dataset)
         self._buffer_size = _buffer_size
         self._decode_method = _decode_method
+        print("dataloader init, decode_method =", _decode_method)
         self._persistent_workers = _persistent_workers
         self._dataloader = _dataloader
         self._world_size = _world_size
@@ -322,6 +323,7 @@ class DeepLakeDataLoader(DataLoader):
         all_vars["_collate"] = collate_fn
         validate_tensors(tensors, self.dataset, all_vars)
         all_vars["_decode_method"] = decode_method
+        print("pytorch, decode_method =", decode_method)
         all_vars["_num_threads"] = num_threads
         all_vars["_prefetch_factor"] = prefetch_factor
         all_vars["_distributed"] = distributed
@@ -393,6 +395,7 @@ class DeepLakeDataLoader(DataLoader):
             dataset = dataset_to_libdeeplake(self._orig_dataset)
 
             jpeg_png_compressed_tensors = check_tensors(self._orig_dataset, tensors)
+            print("validate_decode_method, decode_method=", self._decode_method)
             raw_tensors, compressed_tensors = validate_decode_method(
                 self._decode_method, tensors, jpeg_png_compressed_tensors
             )
