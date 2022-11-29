@@ -622,7 +622,7 @@ def transform(
     # if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
     #     bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
 
-    labels = sample_in[labels_tensor]
+    # labels = sample_in[labels_tensor]
 
     if img.ndim == 2:
         img = np.expand_dims(img, -1)
@@ -647,8 +647,8 @@ def transform(
     # img = np.zeros((100, 100, 3), dtype=np.uint8)
     # shape = img.shape
     gt_masks = None
-    bboxes = np.zeros((labels.size, 4), dtype=np.float32)
-    # labels = np.array([1, 2], dtype=np.int64)    
+    bboxes = np.array([[0, 0, 10, 10], [10, 10, 20, 20]], dtype=np.float32)
+    labels = np.array([1, 2], dtype=np.int64)    
 
     return pipeline(
         {
