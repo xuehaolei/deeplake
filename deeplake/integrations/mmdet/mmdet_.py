@@ -627,7 +627,7 @@ def transform(
     if img.ndim == 2:
         img = np.expand_dims(img, -1)
 
-    img = img[..., ::-1]  # rgb_to_bgr should be optional
+    img = img[..., ::-1].copy()  # rgb_to_bgr should be optional
     if img.shape[2] == 1:
         img = np.repeat(img, 3, axis=2)
     shape = img.shape
@@ -644,8 +644,8 @@ def transform(
     #     gt_masks = None
 
     
-    img = np.zeros(img.shape, dtype=np.uint8)
-    shape = img.shape
+    # img = np.zeros(img.shape, dtype=np.uint8)
+    # shape = img.shape
     gt_masks = None
     # bboxes = np.array([[0, 0, 10, 10], [10, 10, 20, 20]], dtype=np.float32)
     # labels = np.array([1, 2], dtype=np.int64)    
