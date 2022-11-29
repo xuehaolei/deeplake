@@ -616,11 +616,11 @@ def transform(
     if not isinstance(img, np.ndarray):
         img = np.array(img)
 
-    # bboxes = sample_in[boxes_tensor]
-    # # TODO bbox format should be recognized outside the transform, not per sample basis.
-    # bboxes = convert_to_pascal_format(bboxes, bbox_info, img.shape)
-    # if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
-    #     bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
+    bboxes = sample_in[boxes_tensor]
+    # TODO bbox format should be recognized outside the transform, not per sample basis.
+    bboxes = convert_to_pascal_format(bboxes, bbox_info, img.shape)
+    if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
+        bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
 
     labels = sample_in[labels_tensor]
 
@@ -647,7 +647,7 @@ def transform(
     # img = np.zeros((100, 100, 3), dtype=np.uint8)
     # shape = img.shape
     gt_masks = None
-    bboxes = np.zeros((labels.size, 4), dtype=np.float32)
+    # bboxes = np.zeros((labels.size, 4), dtype=np.float32)
     # labels = np.array([1, 2], dtype=np.int64)    
 
     return pipeline(
