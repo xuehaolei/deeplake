@@ -1,11 +1,10 @@
 from collections import OrderedDict
 
-from typing import Callable, Optional, List, Dict
+from typing import Callable, Optional, List
 
 from mmdet.apis.train import auto_scale_lr  # type: ignore
 from mmdet.utils import (  # type: ignore
     build_dp,
-    compat_cfg,
     find_latest_checkpoint,
     get_root_logger,
 )
@@ -35,7 +34,6 @@ import os.path as osp
 import warnings
 from collections import OrderedDict
 import mmcv  # type: ignore
-from mmcv.runner import init_dist  # type: ignore
 import torch
 import numpy as np
 from mmcv.utils import print_log
@@ -764,7 +762,6 @@ def build_dataloader(
         )
 
     else:
-        print(f"====Batch size = {batch_size}====")
         loader = (
             dataloader(dataset)
             .transform(transform_fn)

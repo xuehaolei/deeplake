@@ -415,7 +415,7 @@ class DeepLakeDataLoader(DataLoader):
                 buffer_size=buffer_size,
                 raw_tensors=raw_tensors,
                 compressed_tensors=compressed_tensors,
-                persistent_workers=self._persistent_workers,
+                # persistent_workers=self._persistent_workers,
             )
         return iter(self._dataloader)
 
