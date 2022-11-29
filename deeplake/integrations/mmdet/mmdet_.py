@@ -612,9 +612,9 @@ def transform(
     bbox_info: str,
     poly2mask: bool,
 ):
-    # img = sample_in[images_tensor]
-    # if not isinstance(img, np.ndarray):
-    #     img = np.array(img)
+    img = sample_in[images_tensor]
+    if not isinstance(img, np.ndarray):
+        img = np.array(img)
 
     # bboxes = sample_in[boxes_tensor]
     # # TODO bbox format should be recognized outside the transform, not per sample basis.
@@ -624,13 +624,13 @@ def transform(
 
     # labels = sample_in[labels_tensor]
 
-    # if img.ndim == 2:
-    #     img = np.expand_dims(img, -1)
+    if img.ndim == 2:
+        img = np.expand_dims(img, -1)
 
-    # img = img[..., ::-1].copy()  # rgb_to_bgr should be optional
-    # if img.shape[2] == 1:
-    #     img = np.repeat(img, 3, axis=2)
-    # shape = img.shape
+    img = img[..., ::-1].copy()  # rgb_to_bgr should be optional
+    if img.shape[2] == 1:
+        img = np.repeat(img, 3, axis=2)
+    shape = img.shape
 
     # if masks_tensor:
     #     masks = sample_in[masks_tensor]
@@ -644,8 +644,8 @@ def transform(
     #     gt_masks = None
 
     
-    img = np.zeros((100, 100, 3), dtype=np.uint8)
-    shape = img.shape
+    # img = np.zeros((100, 100, 3), dtype=np.uint8)
+    # shape = img.shape
     gt_masks = None
     bboxes = np.array([[0, 0, 10, 10], [10, 10, 20, 20]], dtype=np.float32)
     labels = np.array([1, 2], dtype=np.int64)    
