@@ -612,36 +612,43 @@ def transform(
     bbox_info: str,
     poly2mask: bool,
 ):
-    img = sample_in[images_tensor]
-    if not isinstance(img, np.ndarray):
-        img = np.array(img)
+    # img = sample_in[images_tensor]
+    # if not isinstance(img, np.ndarray):
+    #     img = np.array(img)
 
-    bboxes = sample_in[boxes_tensor]
-    # TODO bbox format should be recognized outside the transform, not per sample basis.
-    bboxes = convert_to_pascal_format(bboxes, bbox_info, img.shape)
-    if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
-        bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
+    # bboxes = sample_in[boxes_tensor]
+    # # TODO bbox format should be recognized outside the transform, not per sample basis.
+    # bboxes = convert_to_pascal_format(bboxes, bbox_info, img.shape)
+    # if bboxes.shape == (0, 0):  # TO DO: remove after bug will be fixed
+    #     bboxes = np.empty((0, 4), dtype=sample_in[boxes_tensor].dtype)
 
-    labels = sample_in[labels_tensor]
+    # labels = sample_in[labels_tensor]
 
-    if img.ndim == 2:
-        img = np.expand_dims(img, -1)
+    # if img.ndim == 2:
+    #     img = np.expand_dims(img, -1)
 
-    img = img[..., ::-1]  # rgb_to_bgr should be optional
-    if img.shape[2] == 1:
-        img = np.repeat(img, 3, axis=2)
+    # img = img[..., ::-1]  # rgb_to_bgr should be optional
+    # if img.shape[2] == 1:
+    #     img = np.repeat(img, 3, axis=2)
+    # shape = img.shape
+
+    # if masks_tensor:
+    #     masks = sample_in[masks_tensor]
+    #     if poly2mask:
+    #         masks = poly_2_mask(masks, shape)
+    #     elif masks.dtype != np.uint8:
+    #         masks = masks.astype(np.uint8)
+    #     masks = masks.transpose((2, 0, 1))
+    #     gt_masks = BitmapMasks(masks, *shape[:2])
+    # else:
+    #     gt_masks = None
+
+    
+    img = np.zeros((100, 100, 3), dtype=np.uint8)
     shape = img.shape
-
-    if masks_tensor:
-        masks = sample_in[masks_tensor]
-        if poly2mask:
-            masks = poly_2_mask(masks, shape)
-        elif masks.dtype != np.uint8:
-            masks = masks.astype(np.uint8)
-        masks = masks.transpose((2, 0, 1))
-        gt_masks = BitmapMasks(masks, *shape[:2])
-    else:
-        gt_masks = None
+    gt_masks = None
+    bboxes = np.array([[0, 0, 10, 10], [10, 10, 20, 20]], dtype=np.float32)
+    labels = np.array([1, 2], dtype=np.int64)    
 
     return pipeline(
         {
