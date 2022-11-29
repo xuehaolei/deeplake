@@ -632,23 +632,17 @@ def transform(
         img = np.repeat(img, 3, axis=2)
     shape = img.shape
 
-    # if masks_tensor:
-    #     masks = sample_in[masks_tensor]
-    #     if poly2mask:
-    #         masks = poly_2_mask(masks, shape)
-    #     elif masks.dtype != np.uint8:
-    #         masks = masks.astype(np.uint8)
-    #     masks = masks.transpose((2, 0, 1))
-    #     gt_masks = BitmapMasks(masks, *shape[:2])
-    # else:
-    #     gt_masks = None
+    if masks_tensor:
+        masks = sample_in[masks_tensor]
+        if poly2mask:
+            masks = poly_2_mask(masks, shape)
+        elif masks.dtype != np.uint8:
+            masks = masks.astype(np.uint8)
+        masks = masks.transpose((2, 0, 1))
+        gt_masks = BitmapMasks(masks, *shape[:2])
+    else:
+        gt_masks = None
 
-    
-    # img = np.zeros((100, 100, 3), dtype=np.uint8)
-    # shape = img.shape
-    gt_masks = None
-    # bboxes = np.zeros((labels.size, 4), dtype=np.float32)
-    # labels = np.array([1, 2], dtype=np.int64)    
 
     return pipeline(
         {
