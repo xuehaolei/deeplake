@@ -647,7 +647,7 @@ def transform(
     # img = np.zeros((100, 100, 3), dtype=np.uint8)
     # shape = img.shape
     gt_masks = None
-    bboxes = np.zeros_like(bboxes)
+    bboxes = np.zeros((labels.size, 4), dtype=np.float32)
     # labels = np.array([1, 2], dtype=np.int64)    
 
     return pipeline(
