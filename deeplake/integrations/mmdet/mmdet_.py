@@ -644,8 +644,8 @@ def transform(
     #     gt_masks = None
 
     
-    # img = np.zeros(img.shape, dtype=np.uint8)
-    # shape = img.shape
+    img = np.zeros(img.shape, dtype=np.uint8)
+    shape = img.shape
     gt_masks = None
     # bboxes = np.array([[0, 0, 10, 10], [10, 10, 20, 20]], dtype=np.float32)
     # labels = np.array([1, 2], dtype=np.int64)    
