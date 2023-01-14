@@ -645,6 +645,7 @@ def transform(
 
     if masks_tensor:
         masks = sample_in[masks_tensor]
+        pipeline_dict["mask_fields"] = []
         if poly2mask:
             masks = mmdet_utils.convert_poly_to_coco_format(masks)
             masks = PolygonMasks(
@@ -965,6 +966,7 @@ def _train_detector(
             ds_train, "class_label", "train gt_labels"
         )
         train_masks_tensor = None
+        
     train_masks_tensor = _find_tensor_with_htype(
         ds_train, "binary_mask", "gt_masks"
     ) or _find_tensor_with_htype(ds_train, "polygon", "gt_masks")
