@@ -801,7 +801,6 @@ def build_dataloader(
         )
 
         # For DDP
-        # loader.sampler = None
         loader.batch_sampler = Dummy()
 
         mmdet_ds = MMDetDataset(
@@ -1000,9 +999,9 @@ def _train_detector(
         )
         train_masks_tensor = None
 
-        train_masks_tensor = _find_tensor_with_htype(
-            ds_train, "binary_mask", "gt_masks"
-        ) or _find_tensor_with_htype(ds_train, "polygon", "gt_masks")
+        # train_masks_tensor = _find_tensor_with_htype(
+        #     ds_train, "binary_mask", "gt_masks"
+        # ) or _find_tensor_with_htype(ds_train, "polygon", "gt_masks")
 
     # TODO verify required tensors are not None and raise Exception.
 
