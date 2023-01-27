@@ -1,6 +1,4 @@
 from typing import Optional
-from deeplake.integrations.pytorch.common import collate_fn as pytorch_collate_fn
-from deeplake.integrations.tf.common import collate_fn as tf_collate_fn
 from deeplake.util.iterable_ordered_dict import IterableOrderedDict
 from deeplake.core.storage import GCSProvider, GDriveProvider, MemoryProvider
 
@@ -25,8 +23,14 @@ def verify_base_storage(dataset):
 def get_collate_fn(collate, mode):
     if collate is None:
         if mode == "pytorch":
+            from deeplake.integrations.pytorch.common import (
+                collate_fn as pytorch_collate_fn,
+            )
+
             return pytorch_collate_fn
         elif mode == "tensorflow":
+            from deeplake.integrations.tf.common import collate_fn as tf_collate_fn
+
             return tf_collate_fn
     return collate
 
