@@ -5,8 +5,7 @@ import warnings
 
 from deeplake.util.exceptions import (
     ModuleNotInstalledException,
-    SampleDecompressionError,
-    CorruptedSampleError,
+    ReadSampleFromChunkError,
 )
 from deeplake.util.check_installation import tensorflow_installed
 
@@ -46,7 +45,7 @@ def dataset_to_tensorflow(dataset, tensors, tobytes, fetch_chunks=True):
                     else:
                         value = value.numpy(fetch_chunks=fetch_chunks)
                     out[key] = value
-                except SampleDecompressionError:
+                except ReadSampleFromChunkError:
                     warnings.warn(
                         f"Skipping corrupt {dataset[key].meta.sample_compression} sample."
                     )

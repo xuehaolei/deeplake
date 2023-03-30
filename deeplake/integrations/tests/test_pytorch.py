@@ -675,7 +675,7 @@ def test_pytorch_decode(ds, compressed_image_paths, compression):
     if compression:
         ptds = ds.pytorch(decode_method={"image": "pil"}, collate_fn=identity)
         for i, batch in enumerate(ptds):
-            image = batch[0]["image"]
+            image = batch["image"]
             assert isinstance(image, Image.Image)
             if i < 5:
                 np.testing.assert_array_equal(
