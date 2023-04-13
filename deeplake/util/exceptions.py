@@ -539,7 +539,7 @@ class TransformError(Exception):
             super().__init__(index)
         else:
             print_item = print_path = False
-            if sample:
+            if sample is not None:
                 print_item = is_primitive(sample)
                 print_path = has_path(sample)
 
@@ -563,7 +563,7 @@ class TransformError(Exception):
 class SampleAppendError(Exception):
     def __init__(self, tensor, sample=None):
         print_item = print_path = False
-        if sample:
+        if sample is not None:
             print_item = is_primitive(sample)
             print_path = has_path(sample)
         if print_item or print_path:
