@@ -833,6 +833,9 @@ class dataset:
                 logger.info(f"{path} dataset deleted successfully.")
         except Exception as e:
             if force:
+                if not deeplake.exists(path, creds=creds, token=token):
+                    raise TokenPermissionError()
+
                 base_storage = storage_provider_from_path(
                     path=path,
                     creds=creds,
