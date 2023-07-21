@@ -22,6 +22,7 @@ from deeplake.util.exceptions import (
     TensorDoesNotExistError,
 )
 from deeplake.core.vectorstore.vector_search import dataset as dataset_utils
+from deeplake.util.exceptions import TokenPermissionError
 
 
 EMBEDDING_DIM = 100
@@ -652,6 +653,9 @@ def test_delete(local_path, capsys):
     )
     vector_store.delete(ids=ids[:3])
     assert len(vector_store) == NUMBER_OF_DATA - 3
+
+    with pytest.raises(TokenPermissionError):
+        vector_store.delete_by_path("not_existent_path")
 
 
 def assert_updated_vector_store(
