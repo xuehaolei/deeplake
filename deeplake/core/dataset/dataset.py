@@ -424,6 +424,7 @@ class Dataset:
             not self._view_use_parent_commit
             and self._view_base
             and version_state["commit_node"].is_head_node
+            and not self.is_iteration
         ):
             uid = self._view_id
 
