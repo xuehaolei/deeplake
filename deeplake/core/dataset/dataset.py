@@ -424,7 +424,6 @@ class Dataset:
             not self._view_use_parent_commit
             and self._view_base
             and version_state["commit_node"].is_head_node
-            and not self.is_iteration
         ):
             uid = self._view_id
 
@@ -449,9 +448,10 @@ class Dataset:
                 self.__class__ = InvalidView
                 self.__init__(reason="update")
 
-            self._view_base._commit_hooks[uid] = commit_hook
-            self._view_base._checkout_hooks[uid] = checkout_hook
-            self._view_base._update_hooks[uid] = update_hook
+            if not self.is_iteration:
+                self._view_base._commit_hooks[uid] = commit_hook
+                self._view_base._checkout_hooks[uid] = checkout_hook
+                self._view_base._update_hooks[uid] = update_hook
             return version_state
         vs_copy = {}
         vs_copy["branch"] = version_state["branch"]
