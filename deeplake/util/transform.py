@@ -412,7 +412,7 @@ def create_worker_chunk_engines(
     memory_cache = LRUCache(
         MemoryProvider(),
         MemoryProvider(),
-        64 * MB,
+        1 * MB,
     )
     memory_cache.autoflush = False
     for tensor in tensors:
